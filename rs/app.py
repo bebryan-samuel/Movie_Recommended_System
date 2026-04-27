@@ -6,26 +6,16 @@ import joblib
 
 @st.cache_resource
 def load_model():
-    url = "https://drive.google.com/uc?export=download&id=1DWgq-6Yv7HwBCjucKkdnCCad9RC4VwCL"
+    url = "https://drive.google.com/uc?id=1DWgq-6Yv7HwBCjucKkdnCCad9RC4VwCL"
     
-    response = requests.get(url)
-    
-    # 🔥 check if download failed
-    if response.status_code != 200:
-        st.error("Failed to download model")
+    output = "similarity.pkl"
+    gdown.download(url, output, quiet=False)
+
+    if os.path.getsize(output) < 1000000:
+        st.error("Model download failed")
         return None
 
-    # 🔥 write file properly
-    with open("similarity.pkl", "wb") as f:
-        f.write(response.content)
-
-    # 🔥 DEBUG: check file size
-    import os
-    if os.path.getsize("similarity.pkl") < 1000000:
-        st.error("Downloaded file is too small — likely wrong link")
-        return None
-
-    return joblib.load("similarity.pkl")
+    return joblib.load(output)
 
 model = load_model()
 
