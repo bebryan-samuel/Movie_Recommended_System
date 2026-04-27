@@ -1,7 +1,20 @@
 import  streamlit as st
 import pickle 
 import pandas as pd
+import requests
+import joblib
 
+@st.cache_resource
+def load_model():
+    url = "https://drive.google.com/uc?id=1DWgq-6Yv7HwBCjucKkdnCCad9RC4VwCL"
+    
+    response = requests.get(url)
+    open("similarity.pkl", "wb").write(response.content)
+    
+    model = joblib.load("similarity.pkl")
+    return model
+
+model = load_model()
 
 def recommend(movie):
     movie_index = movies[movies['title'] == movie].index[0]
@@ -18,7 +31,8 @@ movies = pd.DataFrame(movies_dict)
 
 similarity = pickle.load(open('similarity.pkl','rb'))
 
-st.title("Welcome to the RS App")
+st.title("NXT Movie>>")
+st.subheader("Movie Recommender System")
 
 selected_movie_name = st.selectbox(
     "Recommend Movies",
